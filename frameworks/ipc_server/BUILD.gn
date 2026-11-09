@@ -86,6 +86,7 @@ sys_installer_gen("sys_installer") {
   }
 
   branch_protector_ret = "pac_ret"
+  
   part_name = "sys_installer"
   subsystem_name = "updater"
 }
