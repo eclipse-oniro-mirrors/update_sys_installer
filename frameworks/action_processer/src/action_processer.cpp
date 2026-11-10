@@ -125,6 +125,10 @@ void ActionProcesser::StartNextAction(InstallerErrCode errCode)
     }
 
     curAction_ = std::move(actionQue_.front());
+    if (curAction_ == nullptr) {
+        LOG(ERROR) << "curAction_ is nullptr";
+        return;
+    }
     LOG(INFO) << "StartNextAction " << curAction_->GetActionName();
     actionQue_.pop_front();
     curAction_->SetUpdateModeAction(installMode_);
