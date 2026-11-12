@@ -43,7 +43,7 @@ StreamInstallProcesser &StreamInstallProcesser::GetInstance()
 int32_t StreamInstallProcesser::Start()
 {
     LOG(INFO) << "StreamInstallProcesser Start";
-
+    std::lock_guard<std::mutex> lock(instanceMutex_);
     // 处理头部数据的时候设置参数，用于ab流式升级
     if (SetUpdateSuffixParam() != UPDATE_SUCCESS) {
         LOG(ERROR) << "SetUpdateSuffixParam failed";
@@ -70,6 +70,7 @@ int32_t StreamInstallProcesser::Start()
 void StreamInstallProcesser::Stop()
 {
     LOG(INFO) << "StreamInstallProcesser Stop enter";
+    std::lock_guard<std::mutex> lock(instanceMtx_);
     if (!isRunning_) {
         LOG(WARNING) << "Action not running";
         return;
@@ -90,6 +91,7 @@ void StreamInstallProcesser::Stop()
 
 bool StreamInstallProcesser::IsRunning()
 {
+    std::lock_guard<std::mutex> lock(instanceMutex_);
     return isRunning_;
 }
 
