@@ -49,7 +49,7 @@ private:
 
 private:
     Updater::RingBuffer ringBuffer_;
-    std::mutex instanceMtx_;
+    std::mutex instanceMutex_;
     std::shared_ptr<StreamStatusManager> statusManager_ {};
     std::shared_ptr<Updater::BinChunkUpdate> binChunkUpdate_ {};
     std::atomic<bool> isExitThread_ = false;
