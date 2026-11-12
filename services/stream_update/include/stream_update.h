@@ -21,6 +21,7 @@
 #include "bin_chunk_update.h"
 #include "ring_buffer.h"
 #include <atomic>
+#include <mutex>
 
 namespace OHOS {
 namespace SysInstaller {
