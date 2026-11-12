@@ -70,7 +70,7 @@ int32_t StreamInstallProcesser::Start()
 void StreamInstallProcesser::Stop()
 {
     LOG(INFO) << "StreamInstallProcesser Stop enter";
-    std::lock_guard<std::mutex> lock(instanceMtx_);
+    std::lock_guard<std::mutex> lock(instanceMutex_);
     if (!isRunning_) {
         LOG(WARNING) << "Action not running";
         return;
