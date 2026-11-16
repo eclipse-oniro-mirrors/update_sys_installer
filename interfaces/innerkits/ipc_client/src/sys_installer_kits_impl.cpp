@@ -138,7 +138,7 @@ int32_t SysInstallerKitsImpl::Init()
     }
 
     std::unique_lock<std::mutex> callbackLock(serviceMutex_);
-    bool finished = serviceCv_.wait_for(callbackLock, std::chrono::seconds(LOAD_SA_TIMEOUT_S),
+    bool finished = serviceCv_.wait_for(callbackLock, std::chrono::seconds(LOAD_SA_TIMEOUT_MS),
         [this]() { return serviceLoadFinished_; });
     if (!finished || !serviceLoadSuccess_) {
         LOG(ERROR) << "load system ability failed or timeout.";
