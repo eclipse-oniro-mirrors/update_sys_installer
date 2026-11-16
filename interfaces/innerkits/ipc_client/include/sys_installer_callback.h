@@ -16,6 +16,7 @@
 #ifndef SYS_INSTALLER_CALLBACK_H
 #define SYS_INSTALLER_CALLBACK_H
 
+#include <mutex>
 #include "iremote_stub.h"
 #include "isys_installer_callback.h"
 #include "isys_installer_callback_func.h"
@@ -35,6 +36,7 @@ public:
     void RegisterCallback(sptr<ISysInstallerCallbackFunc> callback);
 
 private:
+    std::mutex callbackLock_;
     sptr<ISysInstallerCallbackFunc> callback_;
 };
 } // namespace SysInstaller
