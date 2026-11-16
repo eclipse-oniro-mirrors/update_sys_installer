@@ -84,8 +84,6 @@ sys_installer_gen("sys_installer") {
   if (defined(sys_installer_custom_external_deps)) {
     external_deps += sys_installer_custom_external_deps
   }
-
-  branch_protector_ret = "pac_ret"
   
   part_name = "sys_installer"
   subsystem_name = "updater"
