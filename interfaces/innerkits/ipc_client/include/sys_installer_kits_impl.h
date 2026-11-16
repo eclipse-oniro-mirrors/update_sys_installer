@@ -101,6 +101,8 @@ public:
 
     std::mutex serviceMutex_;
     std::condition_variable serviceCv_;
+    bool serviceLoadFinished_ = false;
+    bool serviceLoadSuccess_ = false;
 };
 } // namespace SysInstaller
 } // namespace OHOS
