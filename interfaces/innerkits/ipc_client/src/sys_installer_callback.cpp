@@ -37,8 +37,13 @@ ErrCode SysInstallerCallback::OnUpgradeProgress(UpdateStatus updateStatus, int p
     const std::string &resultMsg)
 {
     LOG(DEBUG) << "updateStatus:" << static_cast<int>(updateStatus) << " percent:" << percent << " msg:" << resultMsg;
-    if (callback_ != nullptr) {
-        callback_->OnUpgradeProgress(updateStatus, percent, resultMsg);
+    sptr<ISysInstallerCallbackFunc> callback;
+    {
+        std::lock_guard<std::mutex> lock(callbackLock_);
+        callback = callback_;
+    }
+    if (callback != nullptr) {
+        callback->OnUpgradeProgress(updateStatus, percent, resultMsg);
     }
     return 0;
 }
@@ -47,7 +52,12 @@ ErrCode SysInstallerCallback::OnUpgradeDealLen(UpdateStatus updateStatus, int de
     const std::string &resultMsg)
 {
     LOG(INFO) << "updateStatus: " << static_cast<int>(updateStatus) << " dealLen:" << dealLen << " msg:" << resultMsg;
-    if (callback_ != nullptr) {
+    sptr<ISysInstallerCallbackFunc> callback;
+    {
+        std::lock_guard<std::mutex> lock(callbackLock_);
+        callback = callback_;
+    }
+    if (callback != nullptr) {
         callback_->OnUpgradeDealLen(updateStatus, dealLen, resultMsg);
     }
     return 0;
@@ -57,14 +67,20 @@ ErrCode SysInstallerCallback::OnUpgradeFeatureStatus(const FeatureStatus &status
 {
     LOG(INFO) << "updateFeatureStatus:" << statusInfo.featureName << " status:" << static_cast<int>(statusInfo.status)
         << " errCode:" << statusInfo.errorInfo.errorCode << " errMsg:" << statusInfo.errorInfo.errorMsg;
-    if (callback_ != nullptr) {
-        callback_->OnUpgradeFeatureStatus(statusInfo);
+    sptr<ISysInstallerCallbackFunc> callback;
+    {
+        std::lock_guard<std::mutex> lock(callbackLock_);
+        callback = callback_;
+    }
+    if (callback != nullptr) {
+        callback->OnUpgradeFeatureStatus(statusInfo);
     }
     return 0;
 }
 
 void SysInstallerCallback::RegisterCallback(sptr<ISysInstallerCallbackFunc> callback)
 {
+    std::lock_guard<std::mutex> lock(callbackLock_);
     callback_ = callback;
 }
 }

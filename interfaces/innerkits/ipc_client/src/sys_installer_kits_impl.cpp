@@ -116,6 +116,12 @@ int32_t SysInstallerKitsImpl::Init()
     (void)chmod(SYS_STAGE_FILE, mode);
     (void)chmod(SYS_ERROR_FILE, mode);
 
+    {
+        std::lock_guard<std::mutex> lock(serviceMutex_);
+        serviceLoadFinished_ = false;
+        serviceLoadSuccess_ = false;
+    }
+
     // 构造步骤1的SystemAbilityLoadCallbackStub子类的实例
     sptr<SysInstallerLoadCallback> loadCallback_ = new SysInstallerLoadCallback();
     // 调用LoadSystemAbility方法
@@ -132,7 +138,12 @@ int32_t SysInstallerKitsImpl::Init()
     }
 
     std::unique_lock<std::mutex> callbackLock(serviceMutex_);
-    serviceCv_.wait_for(callbackLock, std::chrono::seconds(LOAD_SA_TIMEOUT_MS));
+    bool finished = serviceCv_.wait_for(callbackLock, std::chrono::seconds(LOAD_SA_TIMEOUT_MS),
+        [this]() { return serviceLoadFinished_; });
+    if (!finished || !serviceLoadSuccess_) {
+        LOG(ERROR) << "load system ability failed or timeout.";
+        return -1;
+    }
     return 0;
 }
 
@@ -701,11 +712,21 @@ int32_t SysInstallerKitsImpl::SetUpdateVabMode(const std::string &taskId, Update
 
 void SysInstallerKitsImpl::LoadServiceSuccess()
 {
+    {
+        std::lock_guard<std::mutex> lock(serviceMutex_);
+        serviceLoadSuccess_ = true;
+        serviceLoadFinished_ = true;
+    }
     serviceCv_.notify_all();
 }
 
 void SysInstallerKitsImpl::LoadServiceFail()
 {
+    {
+        std::lock_guard<std::mutex> lock(serviceMutex_);
+        serviceLoadSuccess_ = false;
+        serviceLoadFinished_ = true;
+    }
     serviceCv_.notify_all();
 }
 
