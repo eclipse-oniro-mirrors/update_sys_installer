@@ -58,7 +58,7 @@ ErrCode SysInstallerCallback::OnUpgradeDealLen(UpdateStatus updateStatus, int de
         callback = callback_;
     }
     if (callback != nullptr) {
-        callback_->OnUpgradeDealLen(updateStatus, dealLen, resultMsg);
+        callback->OnUpgradeDealLen(updateStatus, dealLen, resultMsg);
     }
     return 0;
 }
